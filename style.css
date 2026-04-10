@@ -55,6 +55,8 @@ body {
   background: var(--s1);
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
+  position: sticky;
+  top: 0;
   z-index: 200;
   gap: 8px;
 }
@@ -70,7 +72,15 @@ body {
   align-items: center;
 }
 
-.logo { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  text-decoration: none;
+  color: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
 .logo-mark {
   width: 28px; height: 28px;
   background: var(--acc);
