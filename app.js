@@ -262,7 +262,18 @@ renderSidebar();
 setSidebarMode('default');
 setBarState('hidden');
 
-// ── バー（▼ Collapse / ▲ Expand）のタップ ──────────────────────────────────
+// ロゴタップでトップにリロード（iOS Safari対応）
+(function bindLogo() {
+  const logo = document.getElementById('logoHome');
+  if (!logo) return;
+  function goHome(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    window.location.href = 'https://watarukawamata.github.io/av-io-reference/';
+  }
+  logo.addEventListener('touchend', goHome, { passive: false });
+  logo.addEventListener('click',    goHome);
+})();
 (function bindBar() {
   const bar = document.getElementById('backBar');
   if (!bar) return;
