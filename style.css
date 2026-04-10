@@ -184,13 +184,13 @@ kbd {
 .cat-tab {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 9px;
   width: 100%;
   padding: 7px 16px;
   background: none;
   border: none;
   cursor: pointer;
-  text-align: left;
   transition: background .1s;
 }
 .cat-tab:hover { background: var(--s2); }
