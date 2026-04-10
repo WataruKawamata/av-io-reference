@@ -124,9 +124,6 @@ kbd {
 }
 
 /* ── SIDEBAR + DETAIL — アコーディオンレイアウト ─────────────────────────────*/
-/* body-wrap を flex-column で縦に積む                                          */
-/* .sidebar-panel と .detail-panel のどちらかが「拡大モード」になる             */
-
 .body-wrap {
   display: flex;
   flex-direction: column;
@@ -138,7 +135,7 @@ kbd {
 .sidebar-panel {
   flex-shrink: 0;
   height: 300px;
-  min-height: 44px;
+  min-height: 0;
   background: var(--s1);
   border-bottom: 2px solid var(--border);
   overflow-y: auto;
@@ -146,37 +143,32 @@ kbd {
   transition: height .3s cubic-bezier(.4,0,.2,1);
 }
 
-/* 一覧拡大モード（検索中 or タブクリック後） */
-.sidebar-panel.expanded {
-  height: 480px;
-}
+.sidebar-panel.collapsed { height: 120px; }
+.sidebar-panel.expanded  { height: 480px; }
 
-/* 詳細表示中は一覧を縮小 */
-.sidebar-panel.collapsed {
-  height: 120px;
-}
-
-/* タブヘッダーエリアにアコーディオントグルボタンを追加 */
-.sidebar-toggle {
+/* ── BACK BAR（機材選択後に詳細エリア上部に表示） ───────────────────────────*/
+.back-bar {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
-  padding: 4px 0;
-  background: none;
+  height: 38px;
+  background: var(--s2);
   border: none;
   border-bottom: 1px solid var(--border);
-  cursor: pointer;
-  color: var(--muted);
   font-family: var(--mono);
-  font-size: 9px;
-  letter-spacing: .1em;
-  gap: 6px;
-  transition: background .1s, color .1s;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--acc);
+  cursor: pointer;
+  letter-spacing: .08em;
+  -webkit-tap-highlight-color: rgba(61,217,174,.15);
+  touch-action: manipulation;
+  transition: background .1s;
 }
-.sidebar-toggle:hover { background: var(--s2); color: var(--dim); }
-.sidebar-toggle-icon { font-size: 11px; transition: transform .3s; }
-.sidebar-panel.collapsed .sidebar-toggle-icon { transform: rotate(180deg); }
+.back-bar:hover,
+.back-bar:active { background: var(--s3); color: var(--acc2); }
 
 .sidebar-scroll {
   display: flex;

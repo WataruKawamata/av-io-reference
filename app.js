@@ -88,39 +88,26 @@ function toggleIO(btn) {
 
 // ─── SIDEBAR ACCORDION ────────────────────────────────────────────────────────
 function setSidebarMode(mode) {
-  const panel = document.getElementById('sidebarPanel');
-  const label = document.getElementById('sidebarToggleLabel');
+  const panel   = document.getElementById('sidebarPanel');
+  const backBar = document.getElementById('backBar');
   if (!panel) return;
 
-  panel.classList.remove('expanded', 'collapsed');
+  panel.classList.remove('collapsed', 'expanded');
 
-  if (mode === 'expanded') {
-    panel.classList.add('expanded');
-    if (label) label.textContent = 'DEVICE LIST  ▴';
-  } else if (mode === 'collapsed') {
+  if (mode === 'collapsed') {
     panel.classList.add('collapsed');
-    if (label) label.textContent = 'DEVICE LIST  ▾';
+    if (backBar) backBar.style.display = 'flex'; // ▲ Device List を表示
+  } else if (mode === 'expanded') {
+    panel.classList.add('expanded');
+    if (backBar) backBar.style.display = 'none';
   } else {
-    if (label) label.textContent = 'DEVICE LIST  ▾';
-  }
-}
-
-function toggleSidebar() {
-  const panel = document.getElementById('sidebarPanel');
-  if (!panel) return;
-  if (panel.classList.contains('collapsed')) {
-    setSidebarMode('expanded');
-  } else {
-    setSidebarMode('collapsed');
+    // default
+    if (backBar) backBar.style.display = 'none';
   }
 }
 
 // ─── DEVICE DETAIL ────────────────────────────────────────────────────────────
 function selectDevice(id) {
-  const panel = document.getElementById('sidebarPanel');
-  const alreadySelected = activeId === id;
-  const alreadyCollapsed = panel && panel.classList.contains('collapsed');
-
   activeId = id;
   renderSidebar();
 
@@ -133,13 +120,8 @@ function selectDevice(id) {
   empty.style.display  = 'none';
   detail.style.display = 'block';
 
-  // すでに同じ機材が選択済み かつ すでに縮小中 → 一覧を広げる
-  if (alreadySelected && alreadyCollapsed) {
-    setSidebarMode('expanded');
-  } else {
-    // 初回タップ or 別機材タップ → 詳細を広くするために縮小
-    setSidebarMode('collapsed');
-  }
+  // 機材タップ → サイドバー縮小、▲ボタン表示
+  setSidebarMode('collapsed');
 
   // connector rows
   const rows = list => list.map(c => {
@@ -260,22 +242,24 @@ document.addEventListener('keydown', e => {
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 renderSidebar();
-setSidebarMode('default'); // 初期状態はデフォルト高さ
+setSidebarMode('default');
 
-// iOS Safari 対応：touchend と click の両方でトグルボタンを登録
-// （onclick属性はiOS Safariで信頼性が低いケースがあるため）
-(function bindToggle() {
-  const btn = document.getElementById('sidebarToggle');
+// ▲ Device List ボタン — iOS Safari で確実に動作させるため touchend を使う
+(function bindBackBar() {
+  const btn = document.getElementById('backBar');
   if (!btn) return;
-  let touchFired = false;
-  btn.addEventListener('touchend', function (e) {
-    e.preventDefault(); // スクロールやzoomを防ぐ
-    touchFired = true;
-    toggleSidebar();
-    setTimeout(() => { touchFired = false; }, 300);
-  }, { passive: false });
-  btn.addEventListener('click', function () {
-    if (touchFired) return; // touchend で既に処理済みなら無視
-    toggleSidebar();
+
+  function onBack(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    setSidebarMode('expanded');
+  }
+
+  btn.addEventListener('touchend', onBack, { passive: false });
+  // PCブラウザ用
+  btn.addEventListener('click', function(e) {
+    // touchend が既に発火していたら無視（iOS二重発火防止）
+    e.preventDefault();
+    setSidebarMode('expanded');
   });
 })();
