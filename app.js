@@ -131,6 +131,12 @@ function selectDevice(id) {
   setSidebarMode('collapsed');
   setBarState('collapse');
 
+  // IN/OUTの総数を計算（"2×" → 2 のように数字を抽出して合計）
+  const totalCount = list => list.reduce((sum, c) => {
+    const n = parseInt(c.count);
+    return sum + (isNaN(n) ? 1 : n);
+  }, 0);
+
   // connector rows
   const rows = list => list.map(c => {
     const chip = ctChip(c.type);
@@ -159,7 +165,7 @@ function selectDevice(id) {
         <div class="dev-subtitle">${d.maker} · ${cat.label}</div>
         <div class="dev-tags">
           <span class="tag ${cat.tag}">${cat.label.toUpperCase()}</span>
-          <span class="tag tag-neutral">${d.inputs.length} IN · ${d.outputs.length} OUT</span>
+          <span class="tag tag-neutral">${totalCount(d.inputs)} IN · ${totalCount(d.outputs)} OUT</span>
           ${d.legacy   ? '<span class="tag tag-legacy">LEGACY</span>'   : ''}
           ${d.consumer ? '<span class="tag tag-consumer">CONSUMER</span>' : ''}
         </div>
@@ -174,7 +180,7 @@ function selectDevice(id) {
             <polyline points="12,3 12,15"/><polyline points="8,7 12,3 16,7"/>
           </svg>
           Inputs
-          <span class="io-count">${d.inputs.length}</span>
+          <span class="io-count">${totalCount(d.inputs)}</span>
           <span class="io-arrow">▾</span>
         </button>
         <div class="io-body">${rows(d.inputs)}</div>
@@ -186,7 +192,7 @@ function selectDevice(id) {
             <polyline points="12,21 12,9"/><polyline points="8,17 12,21 16,17"/>
           </svg>
           Outputs
-          <span class="io-count">${d.outputs.length}</span>
+          <span class="io-count">${totalCount(d.outputs)}</span>
           <span class="io-arrow">▾</span>
         </button>
         <div class="io-body">${rows(d.outputs)}</div>
