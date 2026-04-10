@@ -814,6 +814,24 @@ const DEVICES = [
   notes:   ['2-in/2-out. Bus powered. Up to 192kHz/24-bit.'],
   signal:  ['XLR IN ×2', '▶ Scarlett 2i2', 'USB-C', 'DAW Host'] },
 
+{ id: 'ur22-mk2', category: 'audio', maker: 'Steinberg', model: 'UR22 mkII', icon: '🎚️',
+  inputs:  [{ name: 'Combo IN',  count: '2×', detail: 'XLR/TRS combo — mic/line/inst（CH1/CH2、+48V）', type: 'xlr' },
+            { name: 'Hi-Z IN',   count: '1×', detail: 'CH2 Hi-Z スイッチ — ギター/ベース直接接続', type: 'trs' }],
+  outputs: [{ name: 'USB-B',     count: '1×', detail: 'USB 2.0 — バスパワー / オーディオI/F', type: 'usb' },
+            { name: 'TRS OUT',   count: '2×', detail: '1/4" TRS バランスモニター L/R', type: 'trs' },
+            { name: 'Headphone', count: '1×', detail: '3.5mm ヘッドフォン（独立ボリューム）', type: 'mini' },
+            { name: 'MIDI',      count: '1×', detail: 'MIDI IN / OUT（各1系統）', type: 'other' }],
+  notes:   ['2-in/2-out。バスパワー（USB 2.0）。最大192kHz/24-bit。', 'CH2はHi-Zスイッチでギター直差し対応。MIDI IN/OUT内蔵。', 'Cubase AI付属。iPad対応（CCKアダプタ経由）。'] },
+
+{ id: 'ur22c', category: 'audio', maker: 'Steinberg', model: 'UR22C', icon: '🎚️',
+  inputs:  [{ name: 'Combo IN',  count: '2×', detail: 'XLR/TRS combo — mic/line/inst（CH1/CH2、+48V）', type: 'xlr' },
+            { name: 'Hi-Z IN',   count: '1×', detail: 'CH2 Hi-Z スイッチ — ギター/ベース直接接続', type: 'trs' }],
+  outputs: [{ name: 'USB-C',     count: '1×', detail: 'USB 3.0 Type-C — バスパワー / オーディオI/F', type: 'usb' },
+            { name: 'TRS OUT',   count: '2×', detail: '1/4" TRS バランスモニター L/R', type: 'trs' },
+            { name: 'Headphone', count: '1×', detail: '3.5mm ヘッドフォン（独立ボリューム）', type: 'mini' },
+            { name: 'MIDI',      count: '1×', detail: 'MIDI IN / OUT（各1系統）', type: 'other' }],
+  notes:   ['UR22 mkIIの後継。USB-C（3.0）に変更、iPad/iPhone直接接続対応。', '2-in/2-out。最大192kHz/32-bit float。MIDI IN/OUT内蔵。', 'Cubase AI付属。バスパワー。'] },
+
 // ══════════════════════════════════════════════════════════════
 // AUDIO MIXER
 // ══════════════════════════════════════════════════════════════

@@ -150,12 +150,29 @@ function selectDevice(id) {
     </div>`;
   }).join('');
 
-  // signal flow
-  const sigHtml = (d.signal || []).map((s, i) => {
-    const isMain = s.startsWith('▶');
-    return (i > 0 ? '<span class="sig-arrow">→</span>' : '') +
-      `<span class="sig-node${isMain ? ' main' : ''}">${s.replace('▶ ', '')}</span>`;
-  }).join('');
+  // signal flow — inputs/outputs から自動生成（並列表示）
+  const buildSignalFlow = () => {
+    const chip = c => {
+      const ct = CT[c.type] || CT.other;
+      return `<span class="sf-chip ${ct.cls}">${ct.label}</span>`;
+    };
+    const inNodes  = d.inputs.map(c =>
+      `<div class="sf-node sf-in">${chip(c)}<span class="sf-label">${c.name} ${c.count}</span></div>`
+    ).join('');
+    const outNodes = d.outputs.map(c =>
+      `<div class="sf-node sf-out">${chip(c)}<span class="sf-label">${c.name} ${c.count}</span></div>`
+    ).join('');
+    return `
+      <div class="sf-diagram">
+        <div class="sf-group sf-inputs">${inNodes}</div>
+        <div class="sf-center">
+          <div class="sf-line sf-line-in"></div>
+          <div class="sf-device">${d.model}</div>
+          <div class="sf-line sf-line-out"></div>
+        </div>
+        <div class="sf-group sf-outputs">${outNodes}</div>
+      </div>`;
+  };
 
   detail.innerHTML = `
     <div class="dev-header">
@@ -199,7 +216,6 @@ function selectDevice(id) {
       </div>
     </div>
 
-    ${sigHtml ? `
     <div class="info-panel">
       <div class="info-label teal">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -207,8 +223,8 @@ function selectDevice(id) {
         </svg>
         Typical Signal Flow
       </div>
-      <div class="sig-flow">${sigHtml}</div>
-    </div>` : ''}
+      ${buildSignalFlow()}
+    </div>
 
     ${d.notes && d.notes.length ? `
     <div class="info-panel">
