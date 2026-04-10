@@ -2,7 +2,7 @@
   "name": "AV I/O Reference",
   "short_name": "IORef",
   "description": "Physical connector reference for professional AV equipment",
-  "start_url": "/",
+  "start_url": "https://watarukawamata.github.io/av-io-reference/",
   "display": "standalone",
   "background_color": "#111318",
   "theme_color": "#111318",
