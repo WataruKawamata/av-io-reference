@@ -87,22 +87,34 @@ function toggleIO(btn) {
 }
 
 // ─── SIDEBAR ACCORDION ────────────────────────────────────────────────────────
+// detailMode: 'hidden' | 'visible' | 'minimized'
+// sidebarMode: 'default' | 'collapsed' | 'expanded'
+let detailVisible = false; // 詳細が表示されているか
+
 function setSidebarMode(mode) {
-  const panel   = document.getElementById('sidebarPanel');
-  const backBar = document.getElementById('backBar');
+  const panel = document.getElementById('sidebarPanel');
   if (!panel) return;
-
   panel.classList.remove('collapsed', 'expanded');
+  if (mode === 'collapsed') panel.classList.add('collapsed');
+  if (mode === 'expanded')  panel.classList.add('expanded');
+}
 
-  if (mode === 'collapsed') {
-    panel.classList.add('collapsed');
-    if (backBar) backBar.style.display = 'flex'; // ▲ Device List を表示
-  } else if (mode === 'expanded') {
-    panel.classList.add('expanded');
-    if (backBar) backBar.style.display = 'none';
-  } else {
-    // default
-    if (backBar) backBar.style.display = 'none';
+function setBarState(state) {
+  // state: 'collapse' = 詳細表示中(Collapseボタン表示)
+  //        'expand'   = 詳細最小化中(Expandボタン表示)
+  //        'hidden'   = 非表示
+  const bar = document.getElementById('backBar');
+  if (!bar) return;
+  if (state === 'hidden') {
+    bar.style.display = 'none';
+  } else if (state === 'collapse') {
+    bar.style.display = 'flex';
+    bar.textContent   = '▼  Close';
+    bar.dataset.state = 'collapse';
+  } else if (state === 'expand') {
+    bar.style.display = 'flex';
+    bar.textContent   = '▲  Open';
+    bar.dataset.state = 'expand';
   }
 }
 
@@ -119,9 +131,11 @@ function selectDevice(id) {
   const detail = document.getElementById('deviceDetail');
   empty.style.display  = 'none';
   detail.style.display = 'block';
+  detailVisible = true;
 
-  // 機材タップ → サイドバー縮小、▲ボタン表示
+  // 機材タップ → サイドバー縮小、▼ Collapse ボタン表示
   setSidebarMode('collapsed');
+  setBarState('collapse');
 
   // connector rows
   const rows = list => list.map(c => {
@@ -214,14 +228,16 @@ function selectDevice(id) {
 // ─── SEARCH ───────────────────────────────────────────────────────────────────
 document.getElementById('searchInput').addEventListener('input', function () {
   searchQ = this.value.trim();
-  // 検索時は一覧を広げて、詳細をクリア
   if (searchQ) {
     activeId = null;
     document.getElementById('emptyState').style.display  = 'flex';
     document.getElementById('deviceDetail').style.display = 'none';
+    detailVisible = false;
     setSidebarMode('expanded');
+    setBarState('hidden');
   } else {
     setSidebarMode('default');
+    setBarState(detailVisible ? 'collapse' : 'hidden');
   }
   renderSidebar();
 });
@@ -236,6 +252,7 @@ document.addEventListener('keydown', e => {
     document.getElementById('searchInput').value = '';
     searchQ = '';
     setSidebarMode('default');
+    setBarState(detailVisible ? 'collapse' : 'hidden');
     renderSidebar();
   }
 });
@@ -243,48 +260,55 @@ document.addEventListener('keydown', e => {
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 renderSidebar();
 setSidebarMode('default');
+setBarState('hidden');
 
-// ▲ Device List ボタン — iOS Safari で確実に動作させるため touchend を使う
-(function bindBackBar() {
-  const btn = document.getElementById('backBar');
-  if (!btn) return;
+// ── バー（▼ Collapse / ▲ Expand）のタップ ──────────────────────────────────
+(function bindBar() {
+  const bar = document.getElementById('backBar');
+  if (!bar) return;
 
-  function onBack(e) {
+  function onBarTap(e) {
     e.preventDefault();
     e.stopPropagation();
-    setSidebarMode('expanded');
+    const state = bar.dataset.state;
+    if (state === 'collapse') {
+      // 詳細を最小化（詳細エリアは隠さず、サイドバーを大きく広げる）
+      setSidebarMode('expanded');
+      setBarState('expand');
+    } else {
+      // 詳細を再表示（サイドバーを縮める）
+      setSidebarMode('collapsed');
+      setBarState('collapse');
+    }
   }
 
-  btn.addEventListener('touchend', onBack, { passive: false });
-  // PCブラウザ用
-  btn.addEventListener('click', function(e) {
-    // touchend が既に発火していたら無視（iOS二重発火防止）
-    e.preventDefault();
-    setSidebarMode('expanded');
-  });
+  bar.addEventListener('touchend', onBarTap, { passive: false });
+  bar.addEventListener('click',    onBarTap);
 })();
 
-// サイドバーをスクロールしたら自動で拡大
-(function bindSidebarScroll() {
+// ── サイドバーをタップ or スクロールしたら拡大 ──────────────────────────────
+(function bindSidebarExpand() {
   const panel = document.getElementById('sidebarPanel');
   if (!panel) return;
 
-  panel.addEventListener('scroll', function () {
-    // collapsed 状態でスクロールしたら expanded へ
-    if (panel.classList.contains('collapsed') || !panel.classList.contains('expanded')) {
+  function expandIfNeeded() {
+    if (!panel.classList.contains('expanded')) {
       setSidebarMode('expanded');
+      // 詳細が表示されている場合はバーを Expand に切り替え
+      if (detailVisible) setBarState('expand');
     }
+  }
+
+  // タップ（touchstart でなく touchend で確実に拾う）
+  panel.addEventListener('touchend', function (e) {
+    // cat-tab や dev-btn 上のタップは各自のハンドラに任せる（ここでは拡大のみ）
+    expandIfNeeded();
   }, { passive: true });
 
-  // iOS: touchmove でも拾う（scroll イベントが遅延する場合の補完）
-  let touchStartY = 0;
-  panel.addEventListener('touchstart', function (e) {
-    touchStartY = e.touches[0].clientY;
-  }, { passive: true });
+  // スクロール（passive で性能影響なし）
+  panel.addEventListener('scroll',    expandIfNeeded, { passive: true });
+  panel.addEventListener('touchmove', expandIfNeeded, { passive: true });
 
-  panel.addEventListener('touchmove', function () {
-    if (panel.classList.contains('collapsed') || !panel.classList.contains('expanded')) {
-      setSidebarMode('expanded');
-    }
-  }, { passive: true });
+  // PCマウスクリック用
+  panel.addEventListener('mousedown', expandIfNeeded);
 })();
