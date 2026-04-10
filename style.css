@@ -137,19 +137,19 @@ kbd {
 /* ── SIDEBAR ─────────────────────────────────────────────────────────────────*/
 .sidebar-panel {
   flex-shrink: 0;
-  height: 160px;           /* デフォルト：やや小さめ */
-  min-height: 44px;        /* 最小：カテゴリタブヘッダーだけ見える高さ */
+  height: 300px;           /* デフォルト：大きめ */
+  min-height: 44px;        /* 最小：トグルボタンだけ */
   background: var(--s1);
   border-bottom: 2px solid var(--border);
   overflow-y: auto;
   overflow-x: hidden;
   transition: height .3s cubic-bezier(.4,0,.2,1);
-  cursor: pointer;         /* 「クリックで広がる」をヒント */
+  cursor: pointer;
 }
 
-/* 一覧拡大モード（機材未選択 or タブクリック後） */
+/* 一覧拡大モード（検索中 or タブクリック後） */
 .sidebar-panel.expanded {
-  height: 380px;
+  height: 480px;
 }
 
 /* 詳細表示中は一覧を縮小 */

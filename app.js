@@ -116,6 +116,10 @@ function toggleSidebar() {
 
 // ─── DEVICE DETAIL ────────────────────────────────────────────────────────────
 function selectDevice(id) {
+  const panel = document.getElementById('sidebarPanel');
+  const alreadySelected = activeId === id;
+  const alreadyCollapsed = panel && panel.classList.contains('collapsed');
+
   activeId = id;
   renderSidebar();
 
@@ -128,8 +132,13 @@ function selectDevice(id) {
   empty.style.display  = 'none';
   detail.style.display = 'block';
 
-  // 機材選択時はサイドバーを縮小して詳細を広く見せる
-  setSidebarMode('collapsed');
+  // すでに同じ機材が選択済み かつ すでに縮小中 → 一覧を広げる
+  if (alreadySelected && alreadyCollapsed) {
+    setSidebarMode('expanded');
+  } else {
+    // 初回タップ or 別機材タップ → 詳細を広くするために縮小
+    setSidebarMode('collapsed');
+  }
 
   // connector rows
   const rows = list => list.map(c => {
