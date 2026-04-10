@@ -39,10 +39,9 @@ function renderSidebar() {
 
     html += `<div class="cat-section${isOpen ? '' : ' collapsed'}" data-cat="${cat.id}">
       <button class="cat-tab" onclick="toggleCat('${cat.id}')">
-        <span class="cat-pip ${cat.pip}"></span>
+        <span class="cat-arrow">${isOpen ? '▼' : '▶'}</span>
         <span class="cat-label">${cat.label}</span>
         <span class="cat-count">${devs.length}</span>
-        <span class="cat-arrow">${isOpen ? '▾' : '▸'}</span>
       </button>
       <div class="cat-devices">`;
 
@@ -71,13 +70,8 @@ function toggleCat(id) {
   if (!el) return;
   const collapsed = el.classList.toggle('collapsed');
   const arrow = el.querySelector('.cat-arrow');
-  if (arrow) arrow.textContent = collapsed ? '▸' : '▾';
-  // 状態を記憶
-  if (collapsed) {
-    openCats.delete(id);
-  } else {
-    openCats.add(id);
-  }
+  if (arrow) arrow.textContent = collapsed ? '▶' : '▼';
+  if (collapsed) { openCats.delete(id); } else { openCats.add(id); }
 }
 
 function toggleIO(btn) {
