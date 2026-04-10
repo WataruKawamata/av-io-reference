@@ -2,6 +2,7 @@
 
 let activeId = null;
 let searchQ  = '';
+let openCats = new Set(); // 開いているカテゴリIDを記憶
 
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
 function ctChip(type) { return CT[type] || CT.other; }
@@ -33,8 +34,8 @@ function renderSidebar() {
     });
     if (!devs.length) return;
 
-    // collapsed by default — search overrides
-    const isOpen = q.length > 0;
+    // 検索中は全部開く。それ以外は openCats の状態を維持
+    const isOpen = q.length > 0 ? true : openCats.has(cat.id);
 
     html += `<div class="cat-section${isOpen ? '' : ' collapsed'}" data-cat="${cat.id}">
       <button class="cat-tab" onclick="toggleCat('${cat.id}')">
@@ -71,6 +72,12 @@ function toggleCat(id) {
   const collapsed = el.classList.toggle('collapsed');
   const arrow = el.querySelector('.cat-arrow');
   if (arrow) arrow.textContent = collapsed ? '▸' : '▾';
+  // 状態を記憶
+  if (collapsed) {
+    openCats.delete(id);
+  } else {
+    openCats.add(id);
+  }
 }
 
 function toggleIO(btn) {
@@ -81,26 +88,20 @@ function toggleIO(btn) {
 
 // ─── SIDEBAR ACCORDION ────────────────────────────────────────────────────────
 function setSidebarMode(mode) {
-  // mode: 'default' | 'expanded' | 'collapsed'
-  const panel  = document.getElementById('sidebarPanel');
-  const icon   = document.querySelector('.sidebar-toggle-icon');
-  const label  = document.getElementById('sidebarToggleLabel');
+  const panel = document.getElementById('sidebarPanel');
+  const label = document.getElementById('sidebarToggleLabel');
   if (!panel) return;
 
   panel.classList.remove('expanded', 'collapsed');
 
   if (mode === 'expanded') {
     panel.classList.add('expanded');
-    if (icon)  icon.style.transform = 'rotate(0deg)';
-    if (label) label.textContent = 'DEVICE LIST  ▴ tap to collapse';
+    if (label) label.textContent = 'DEVICE LIST  ▴';
   } else if (mode === 'collapsed') {
     panel.classList.add('collapsed');
-    if (icon)  icon.style.transform = 'rotate(180deg)';
-    if (label) label.textContent = 'DEVICE LIST  ▾ tap to expand';
+    if (label) label.textContent = 'DEVICE LIST  ▾';
   } else {
-    // default
-    if (icon)  icon.style.transform = 'rotate(0deg)';
-    if (label) label.textContent = 'DEVICE LIST';
+    if (label) label.textContent = 'DEVICE LIST  ▾';
   }
 }
 
@@ -259,3 +260,22 @@ document.addEventListener('keydown', e => {
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 renderSidebar();
+setSidebarMode('default'); // 初期状態はデフォルト高さ
+
+// iOS Safari 対応：touchend と click の両方でトグルボタンを登録
+// （onclick属性はiOS Safariで信頼性が低いケースがあるため）
+(function bindToggle() {
+  const btn = document.getElementById('sidebarToggle');
+  if (!btn) return;
+  let touchFired = false;
+  btn.addEventListener('touchend', function (e) {
+    e.preventDefault(); // スクロールやzoomを防ぐ
+    touchFired = true;
+    toggleSidebar();
+    setTimeout(() => { touchFired = false; }, 300);
+  }, { passive: false });
+  btn.addEventListener('click', function () {
+    if (touchFired) return; // touchend で既に処理済みなら無視
+    toggleSidebar();
+  });
+})();

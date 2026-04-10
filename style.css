@@ -137,14 +137,13 @@ kbd {
 /* ── SIDEBAR ─────────────────────────────────────────────────────────────────*/
 .sidebar-panel {
   flex-shrink: 0;
-  height: 300px;           /* デフォルト：大きめ */
-  min-height: 44px;        /* 最小：トグルボタンだけ */
+  height: 300px;
+  min-height: 44px;
   background: var(--s1);
   border-bottom: 2px solid var(--border);
   overflow-y: auto;
   overflow-x: hidden;
   transition: height .3s cubic-bezier(.4,0,.2,1);
-  cursor: pointer;
 }
 
 /* 一覧拡大モード（検索中 or タブクリック後） */
