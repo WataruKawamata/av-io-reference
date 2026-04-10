@@ -79,6 +79,41 @@ function toggleIO(btn) {
   panel.classList.toggle('collapsed');
 }
 
+// ─── SIDEBAR ACCORDION ────────────────────────────────────────────────────────
+function setSidebarMode(mode) {
+  // mode: 'default' | 'expanded' | 'collapsed'
+  const panel  = document.getElementById('sidebarPanel');
+  const icon   = document.querySelector('.sidebar-toggle-icon');
+  const label  = document.getElementById('sidebarToggleLabel');
+  if (!panel) return;
+
+  panel.classList.remove('expanded', 'collapsed');
+
+  if (mode === 'expanded') {
+    panel.classList.add('expanded');
+    if (icon)  icon.style.transform = 'rotate(0deg)';
+    if (label) label.textContent = 'DEVICE LIST  ▴ tap to collapse';
+  } else if (mode === 'collapsed') {
+    panel.classList.add('collapsed');
+    if (icon)  icon.style.transform = 'rotate(180deg)';
+    if (label) label.textContent = 'DEVICE LIST  ▾ tap to expand';
+  } else {
+    // default
+    if (icon)  icon.style.transform = 'rotate(0deg)';
+    if (label) label.textContent = 'DEVICE LIST';
+  }
+}
+
+function toggleSidebar() {
+  const panel = document.getElementById('sidebarPanel');
+  if (!panel) return;
+  if (panel.classList.contains('collapsed')) {
+    setSidebarMode('expanded');
+  } else {
+    setSidebarMode('collapsed');
+  }
+}
+
 // ─── DEVICE DETAIL ────────────────────────────────────────────────────────────
 function selectDevice(id) {
   activeId = id;
@@ -92,6 +127,9 @@ function selectDevice(id) {
   const detail = document.getElementById('deviceDetail');
   empty.style.display  = 'none';
   detail.style.display = 'block';
+
+  // 機材選択時はサイドバーを縮小して詳細を広く見せる
+  setSidebarMode('collapsed');
 
   // connector rows
   const rows = list => list.map(c => {
@@ -184,11 +222,14 @@ function selectDevice(id) {
 // ─── SEARCH ───────────────────────────────────────────────────────────────────
 document.getElementById('searchInput').addEventListener('input', function () {
   searchQ = this.value.trim();
-  // clear selection when searching
+  // 検索時は一覧を広げて、詳細をクリア
   if (searchQ) {
     activeId = null;
     document.getElementById('emptyState').style.display  = 'flex';
     document.getElementById('deviceDetail').style.display = 'none';
+    setSidebarMode('expanded');
+  } else {
+    setSidebarMode('default');
   }
   renderSidebar();
 });
@@ -197,10 +238,12 @@ document.addEventListener('keydown', e => {
   if (e.key === '/') {
     e.preventDefault();
     document.getElementById('searchInput').focus();
+    setSidebarMode('expanded');
   }
   if (e.key === 'Escape') {
     document.getElementById('searchInput').value = '';
     searchQ = '';
+    setSidebarMode('default');
     renderSidebar();
   }
 });
