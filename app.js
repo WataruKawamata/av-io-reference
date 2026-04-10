@@ -263,3 +263,28 @@ setSidebarMode('default');
     setSidebarMode('expanded');
   });
 })();
+
+// サイドバーをスクロールしたら自動で拡大
+(function bindSidebarScroll() {
+  const panel = document.getElementById('sidebarPanel');
+  if (!panel) return;
+
+  panel.addEventListener('scroll', function () {
+    // collapsed 状態でスクロールしたら expanded へ
+    if (panel.classList.contains('collapsed') || !panel.classList.contains('expanded')) {
+      setSidebarMode('expanded');
+    }
+  }, { passive: true });
+
+  // iOS: touchmove でも拾う（scroll イベントが遅延する場合の補完）
+  let touchStartY = 0;
+  panel.addEventListener('touchstart', function (e) {
+    touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+
+  panel.addEventListener('touchmove', function () {
+    if (panel.classList.contains('collapsed') || !panel.classList.contains('expanded')) {
+      setSidebarMode('expanded');
+    }
+  }, { passive: true });
+})();
