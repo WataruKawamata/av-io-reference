@@ -98,7 +98,7 @@ body {
   border-radius: 6px;
   padding: 7px 10px 7px 32px;
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 16px; /* 16px未満だとiOS Safariが自動ズームするため */
   color: var(--text);
   outline: none;
   transition: border-color .15s;
