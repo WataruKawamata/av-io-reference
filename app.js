@@ -73,6 +73,12 @@ function toggleCat(id) {
   if (arrow) arrow.textContent = collapsed ? '▸' : '▾';
 }
 
+function toggleIO(btn) {
+  const panel = btn.closest('.io-panel');
+  if (!panel) return;
+  panel.classList.toggle('collapsed');
+}
+
 // ─── DEVICE DETAIL ────────────────────────────────────────────────────────────
 function selectDevice(id) {
   activeId = id;
@@ -123,25 +129,29 @@ function selectDevice(id) {
     </div>
 
     <div class="io-grid">
-      <div class="io-panel in">
-        <div class="io-hdr">
+      <div class="io-panel in collapsed">
+        <button class="io-hdr" onclick="toggleIO(this)">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="8,12 4,12 4,20 20,20 20,12 16,12"/>
             <polyline points="12,3 12,15"/><polyline points="8,7 12,3 16,7"/>
           </svg>
-          Inputs <span class="io-count">${d.inputs.length}</span>
-        </div>
-        ${rows(d.inputs)}
+          Inputs
+          <span class="io-count">${d.inputs.length}</span>
+          <span class="io-arrow">▾</span>
+        </button>
+        <div class="io-body">${rows(d.inputs)}</div>
       </div>
-      <div class="io-panel out">
-        <div class="io-hdr">
+      <div class="io-panel out collapsed">
+        <button class="io-hdr" onclick="toggleIO(this)">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="8,12 4,12 4,4 20,4 20,12 16,12"/>
             <polyline points="12,21 12,9"/><polyline points="8,17 12,21 16,17"/>
           </svg>
-          Outputs <span class="io-count">${d.outputs.length}</span>
-        </div>
-        ${rows(d.outputs)}
+          Outputs
+          <span class="io-count">${d.outputs.length}</span>
+          <span class="io-arrow">▾</span>
+        </button>
+        <div class="io-body">${rows(d.outputs)}</div>
       </div>
     </div>
 
